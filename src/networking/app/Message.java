@@ -9,6 +9,7 @@ public class Message {
     long ID;
     String text;
     boolean recieved;
+    double power;
 
     public Message(Node sender, Node reciever, long ID, String text) {
         this.sender = sender;

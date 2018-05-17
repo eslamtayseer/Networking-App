@@ -5,10 +5,10 @@ import java.awt.*;
 import java.util.*;
 
 
-public class Node {
+public class Node implements Comparable<Node> {
     int id;
     double power;
-    int distance;
+    double distance;
     Point location;
     boolean isReceived;
     Node parent;
@@ -23,7 +23,7 @@ public class Node {
         this.location = location;
         adjList = new ArrayList();
     }
-    public void send (Message m ){
+    public void Boadcast (Message m ){
         if(!m.recieved && !isReceived) {
             isReceived = true;
 
@@ -32,20 +32,20 @@ public class Node {
                     child.isReceived = true;
                     m.recieved = true;
                     reset();
-                    child.Recieve(new Message(child,m.sender,System.currentTimeMillis(),"Recieved"));
+                    child.BoadcastReply(new Message(child,m.sender,System.currentTimeMillis(),"Recieved"));
                     System.out.println("Delivered");
                     reset();
                     return;
                     
                 }
                 else if(!child.isReceived) 
-                    child.send(m);
+                    child.Boadcast(m);
                 
             
             }
         }
     }
-    public void Recieve (Message m){
+    public void BoadcastReply (Message m){
         if(!m.recieved && !isReceived) {
             isReceived = true;
 
@@ -57,23 +57,39 @@ public class Node {
                     return;
                 }
                 else if(!child.isReceived) 
-                    child.Recieve(m);
+                    child.BoadcastReply(m);
                 
             
             }
         }
         
     }
+    public boolean send(Message m, Node target){
+        power -= Math.sqrt(Math.pow(this.location.x-target.location.x, 2)+Math.pow(this.location.y-target.location.y,2))*0.05;
+        if(power >= 0) {
+            m.power+=Math.sqrt(Math.pow(this.location.x-target.location.x, 2)+Math.pow(this.location.y-target.location.y,2))*0.05;
+            target.isReceived = true;
+            target.message = m;
+            //power -= 1;
+            return true;
+        } 
+        
+        return false;
+    }
     public static void reset (){
         for(Node node:AllNodes){
             node.isReceived= false;
+            node.distance=1000000;
+            node.parent=null;
+            node.message=null;
         }
     }
     
     public static void MakeGraph (int noOfNodes){
+        AllNodes = new ArrayList<Node>();
         Random rand = new Random();
         for(int i =0;i<noOfNodes;i++)
-            AllNodes.add(new Node(i,20,1000000,new Point(0, 0)));
+            AllNodes.add(new Node(i,2000,1000000,new Point(0, 0)));
         
         for(int i =0;i<noOfNodes/2;i++){
             Node Parent = AllNodes.get(i); 
@@ -107,6 +123,11 @@ public class Node {
         }
         
         }
+
+    @Override
+    public int compareTo(Node t) {
+        return Double.compare(distance, t.distance);
+    }
            
         
            
