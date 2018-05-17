@@ -5,7 +5,6 @@ import java.util.ArrayList;
 public class Message {
     Node sender;
     Node reciever;
-    ArrayList<Node> path;
     long ID;
     String text;
     boolean recieved;
@@ -16,10 +15,8 @@ public class Message {
         this.reciever = reciever;
         this.ID = ID;
         this.text = text;
-        path = new ArrayList();
+        power = 0;
         recieved = false;
     }
-    public void addToPath(Node n){
-        path.add(n);
-    }
+    
 }

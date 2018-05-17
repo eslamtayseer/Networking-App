@@ -26,14 +26,16 @@ public class Node implements Comparable<Node> {
     public void Boadcast (Message m ){
         if(!m.recieved && !isReceived) {
             isReceived = true;
-
+            m.power++;
             for(Node child : adjList){
                 if(child.id == m.reciever.id&&!child.isReceived&& !m.recieved){
                     child.isReceived = true;
                     m.recieved = true;
                     reset();
-                    child.BoadcastReply(new Message(child,m.sender,System.currentTimeMillis(),"Recieved"));
-                    System.out.println("Delivered");
+                    Message reply = new Message(child,m.sender,System.currentTimeMillis(),"Recieved");
+                    child.BoadcastReply(reply);
+                    m.power+=reply.power;
+                    //System.out.println("Delivered");
                     reset();
                     return;
                     
@@ -47,13 +49,14 @@ public class Node implements Comparable<Node> {
     }
     public void BoadcastReply (Message m){
         if(!m.recieved && !isReceived) {
+            
             isReceived = true;
-
+            m.power++;
             for(Node child : adjList){
                 if(child.id == m.reciever.id&& !child.isReceived&& !m.recieved){
                     child.isReceived = true;
                     m.recieved = true;
-                    System.out.println("Replied");
+                   // System.out.println("Replied");
                     return;
                 }
                 else if(!child.isReceived) 
